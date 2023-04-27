@@ -78,14 +78,15 @@ public class ZLMMediaListManager {
         if (pushInDb == null) {
             transform.setCreateTime(DateUtil.getNow());
             streamPushMapper.add(transform);
-        }else {
+        } else {
             streamPushMapper.update(transform);
             gbStreamMapper.updateMediaServer(onStreamChangedHookParam.getApp(), onStreamChangedHookParam.getStream(), onStreamChangedHookParam.getMediaServerId());
         }
         ChannelOnlineEvent channelOnlineEventLister = getChannelOnlineEventLister(transform.getApp(), transform.getStream());
-        if ( channelOnlineEventLister != null)  {
+        if (channelOnlineEventLister != null) {
             try {
-                channelOnlineEventLister.run(transform.getApp(), transform.getStream(), transform.getServerId());;
+                channelOnlineEventLister.run(transform.getApp(), transform.getStream(), transform.getServerId());
+                ;
             } catch (ParseException e) {
                 logger.error("addPush: ", e);
             }
@@ -99,7 +100,7 @@ public class ZLMMediaListManager {
         // 查看推流状态
         if (zlmrtpServerFactory.isStreamReady(mediaServerItem, app, stream)) {
             ChannelOnlineEvent channelOnlineEventLister = getChannelOnlineEventLister(app, stream);
-            if (channelOnlineEventLister != null)  {
+            if (channelOnlineEventLister != null) {
                 try {
                     channelOnlineEventLister.run(app, stream, mediaServerId);
                 } catch (ParseException e) {
@@ -116,8 +117,8 @@ public class ZLMMediaListManager {
         int result;
         if (gbStream == null) {
             result = storager.removeMedia(app, streamId);
-        }else {
-            result =storager.mediaOffline(app, streamId);
+        } else {
+            result = storager.mediaOffline(app, streamId);
         }
         return result;
     }

@@ -113,7 +113,7 @@ public class ZLMHttpHookListener {
      * 服务器定时上报时间，上报间隔可配置，默认10s上报一次
      */
     @ResponseBody
-    
+
     @PostMapping(value = "/on_server_keepalive", produces = "application/json;charset=UTF-8")
     public HookResult onServerKeepalive(@RequestBody OnServerKeepaliveHookParam param) {
 
@@ -137,7 +137,7 @@ public class ZLMHttpHookListener {
      * 播放器鉴权事件，rtsp/rtmp/http-flv/ws-flv/hls的播放都将触发此鉴权事件。
      */
     @ResponseBody
-    
+
     @PostMapping(value = "/on_play", produces = "application/json;charset=UTF-8")
     public HookResult onPlay(@RequestBody OnPlayHookParam param) {
         if (logger.isDebugEnabled()) {
@@ -257,7 +257,7 @@ public class ZLMHttpHookListener {
         if (mediaInfo.getRecordAssistPort() > 0 && userSetting.getRecordPath() == null) {
             logger.info("推流时发现尚未设置录像路径，从assist服务中读取");
             JSONObject info = assistRESTfulUtils.getInfo(mediaInfo, null);
-            if (info != null && info.getInteger("code") != null && info.getInteger("code") == 0 ) {
+            if (info != null && info.getInteger("code") != null && info.getInteger("code") == 0) {
                 JSONObject dataJson = info.getJSONObject("data");
                 if (dataJson != null) {
                     String recordPath = dataJson.getString("record");
@@ -386,7 +386,7 @@ public class ZLMHttpHookListener {
                         }
                         GbStream gbStream = storager.getGbStream(param.getApp(), param.getStream());
                         if (gbStream != null) {
-                            eventPublisher.catalogEventPublishForStream(null, gbStream, param.isRegist()?CatalogEvent.ON:CatalogEvent.OFF);
+                            eventPublisher.catalogEventPublishForStream(null, gbStream, param.isRegist() ? CatalogEvent.ON : CatalogEvent.OFF);
                         }
                         if (type != null) {
                             // 发送流变化redis消息
@@ -418,7 +418,7 @@ public class ZLMHttpHookListener {
                                         cmder.streamByeCmd(device, sendRtpItem.getChannelId(), param.getStream(), sendRtpItem.getCallId());
                                     }
                                 } catch (SipException | InvalidArgumentException | ParseException |
-                                         SsrcTransactionNotFoundException e) {
+                                        SsrcTransactionNotFoundException e) {
                                     logger.error("[命令发送失败] 国标级联 发送BYE: {}", e.getMessage());
                                 }
                             }
@@ -472,7 +472,7 @@ public class ZLMHttpHookListener {
                         cmder.streamByeCmd(device, streamInfoForPlayCatch.getChannelId(),
                                 streamInfoForPlayCatch.getStream(), null);
                     } catch (InvalidArgumentException | ParseException | SipException |
-                             SsrcTransactionNotFoundException e) {
+                            SsrcTransactionNotFoundException e) {
                         logger.error("[无人观看]点播， 发送BYE失败 {}", e.getMessage());
                     }
                 }
@@ -494,7 +494,7 @@ public class ZLMHttpHookListener {
                             cmder.streamByeCmd(device, streamInfoForPlayBackCatch.getChannelId(),
                                     streamInfoForPlayBackCatch.getStream(), null);
                         } catch (InvalidArgumentException | ParseException | SipException |
-                                 SsrcTransactionNotFoundException e) {
+                                SsrcTransactionNotFoundException e) {
                             logger.error("[无人观看]回放， 发送BYE失败 {}", e.getMessage());
                         }
                     }

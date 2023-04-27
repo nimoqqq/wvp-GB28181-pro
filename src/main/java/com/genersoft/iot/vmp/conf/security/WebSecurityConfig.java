@@ -28,6 +28,7 @@ import java.util.Arrays;
 
 /**
  * 配置Spring Security
+ *
  * @author lin
  */
 @Configuration
@@ -53,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     private AnonymousAuthenticationEntryPoint anonymousAuthenticationEntryPoint;
+
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -83,6 +85,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 配置认证方式
+     *
      * @param auth
      * @throws Exception
      */
@@ -111,7 +114,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers(userSetting.getInterfaceAuthenticationExcludes().toArray(new String[0])).permitAll()
-                .antMatchers("/api/user/login","/index/hook/**","/zlm_Proxy/FhTuMYqB2HeCuNOb/record/t/1/2023-03-25/16:35:07-16:35:16-9353.mp4").permitAll()
+                .antMatchers("/api/user/login", "/index/hook/**", "/zlm_Proxy/FhTuMYqB2HeCuNOb/record/t/1/2023-03-25/16:35:07-16:35:16-9353.mp4").permitAll()
                 .anyRequest().authenticated()
                 // 异常处理器
                 .and()
@@ -124,7 +127,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-    CorsConfigurationSource configurationSource(){
+    CorsConfigurationSource configurationSource() {
         // 配置跨域
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
@@ -135,7 +138,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         corsConfiguration.setExposedHeaders(Arrays.asList(JwtUtils.getHeader()));
 
         UrlBasedCorsConfigurationSource url = new UrlBasedCorsConfigurationSource();
-        url.registerCorsConfiguration("/**",corsConfiguration);
+        url.registerCorsConfiguration("/**", corsConfiguration);
         return url;
     }
 

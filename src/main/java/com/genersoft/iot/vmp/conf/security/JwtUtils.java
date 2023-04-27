@@ -113,7 +113,7 @@ public class JwtUtils {
             long timeRemaining = LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(8)) - expirationTime.getValue();
             if (timeRemaining < 5 * 60) {
                 jwtUser.setStatus(JwtUser.TokenStatus.EXPIRING_SOON);
-            }else {
+            } else {
                 jwtUser.setStatus(JwtUser.TokenStatus.NORMAL);
             }
 
@@ -128,11 +128,11 @@ public class JwtUtils {
         } catch (InvalidJwtException e) {
             if (e.hasErrorCode(ErrorCodes.EXPIRED)) {
                 jwtUser.setStatus(JwtUser.TokenStatus.EXPIRED);
-            }else {
+            } else {
                 jwtUser.setStatus(JwtUser.TokenStatus.EXCEPTION);
             }
             return jwtUser;
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("[Token解析失败]： {}", e.getMessage());
             jwtUser.setStatus(JwtUser.TokenStatus.EXPIRED);
             return jwtUser;

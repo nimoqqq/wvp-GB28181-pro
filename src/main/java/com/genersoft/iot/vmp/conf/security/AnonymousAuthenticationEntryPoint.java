@@ -15,23 +15,24 @@ import java.io.IOException;
 
 /**
  * 处理匿名用户访问逻辑
+ *
  * @author lin
  */
 @Component
-public class    AnonymousAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class AnonymousAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) {
         String jwt = request.getHeader(JwtUtils.getHeader());
         JwtUser jwtUser = JwtUtils.verifyToken(jwt);
         String username = jwtUser.getUserName();
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, jwtUser.getPassword() );
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, jwtUser.getPassword());
         SecurityContextHolder.getContext().setAuthentication(token);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", ErrorCode.ERROR401.getCode());
         jsonObject.put("msg", ErrorCode.ERROR401.getMsg());
         String logUri = "api/user/login";
-        if (request.getRequestURI().contains(logUri)){
+        if (request.getRequestURI().contains(logUri)) {
             jsonObject.put("msg", e.getMessage());
         }
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

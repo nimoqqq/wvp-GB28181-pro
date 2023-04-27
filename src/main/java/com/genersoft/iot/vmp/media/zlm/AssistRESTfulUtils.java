@@ -21,11 +21,11 @@ public class AssistRESTfulUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(AssistRESTfulUtils.class);
 
-    public interface RequestCallback{
+    public interface RequestCallback {
         void run(JSONObject response);
     }
 
-    private OkHttpClient getClient(){
+    private OkHttpClient getClient() {
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
         if (logger.isDebugEnabled()) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor(message -> {
@@ -50,13 +50,13 @@ public class AssistRESTfulUtils {
             return null;
         }
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(String.format("http://%s:%s/%s",  mediaServerItem.getIp(), mediaServerItem.getRecordAssistPort(), api));
+        stringBuffer.append(String.format("http://%s:%s/%s", mediaServerItem.getIp(), mediaServerItem.getRecordAssistPort(), api));
         JSONObject responseJSON = null;
 
         if (param != null && param.keySet().size() > 0) {
             stringBuffer.append("?");
             int index = 1;
-            for (String key : param.keySet()){
+            for (String key : param.keySet()) {
                 if (param.get(key) != null) {
                     stringBuffer.append(key + "=" + param.get(key));
                     if (index < param.size()) {
@@ -72,77 +72,76 @@ public class AssistRESTfulUtils {
                 .get()
                 .url(url)
                 .build();
-            if (callback == null) {
-                try {
-                    Response response = client.newCall(request).execute();
+        if (callback == null) {
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    ResponseBody responseBody = response.body();
+                    if (responseBody != null) {
+                        String responseStr = responseBody.string();
+                        responseJSON = JSON.parseObject(responseStr);
+                    }
+                } else {
+                    response.close();
+                    Objects.requireNonNull(response.body()).close();
+                }
+            } catch (ConnectException e) {
+                logger.error(String.format("连接Assist失败: %s, %s", e.getCause().getMessage(), e.getMessage()));
+                logger.info("请检查media配置并确认Assist已启动...");
+            } catch (IOException e) {
+                logger.error(String.format("[ %s ]请求失败: %s", url, e.getMessage()));
+            }
+        } else {
+            client.newCall(request).enqueue(new Callback() {
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) {
                     if (response.isSuccessful()) {
-                        ResponseBody responseBody = response.body();
-                        if (responseBody != null) {
-                            String responseStr = responseBody.string();
-                            responseJSON = JSON.parseObject(responseStr);
+                        try {
+                            String responseStr = Objects.requireNonNull(response.body()).string();
+                            callback.run(JSON.parseObject(responseStr));
+                        } catch (IOException e) {
+                            logger.error(String.format("[ %s ]请求失败: %s", url, e.getMessage()));
                         }
-                    }else {
+
+                    } else {
                         response.close();
                         Objects.requireNonNull(response.body()).close();
                     }
-                } catch (ConnectException e) {
+                }
+
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     logger.error(String.format("连接Assist失败: %s, %s", e.getCause().getMessage(), e.getMessage()));
                     logger.info("请检查media配置并确认Assist已启动...");
-                }catch (IOException e) {
-                    logger.error(String.format("[ %s ]请求失败: %s", url, e.getMessage()));
                 }
-            }else {
-                client.newCall(request).enqueue(new Callback(){
-
-                    @Override
-                    public void onResponse(@NotNull Call call, @NotNull Response response){
-                        if (response.isSuccessful()) {
-                            try {
-                                String responseStr = Objects.requireNonNull(response.body()).string();
-                                callback.run(JSON.parseObject(responseStr));
-                            } catch (IOException e) {
-                                logger.error(String.format("[ %s ]请求失败: %s", url, e.getMessage()));
-                            }
-
-                        }else {
-                            response.close();
-                            Objects.requireNonNull(response.body()).close();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        logger.error(String.format("连接Assist失败: %s, %s", e.getCause().getMessage(), e.getMessage()));
-                        logger.info("请检查media配置并确认Assist已启动...");
-                    }
-                });
-            }
-
+            });
+        }
 
 
         return responseJSON;
     }
 
 
-    public JSONObject fileDuration(MediaServerItem mediaServerItem, String app, String stream, RequestCallback callback){
+    public JSONObject fileDuration(MediaServerItem mediaServerItem, String app, String stream, RequestCallback callback) {
         Map<String, Object> param = new HashMap<>();
-        param.put("app",app);
-        param.put("stream",stream);
-        param.put("recordIng",true);
-        return sendGet(mediaServerItem, "api/record/file/duration",param, callback);
+        param.put("app", app);
+        param.put("stream", stream);
+        param.put("recordIng", true);
+        return sendGet(mediaServerItem, "api/record/file/duration", param, callback);
     }
 
-    public JSONObject getInfo(MediaServerItem mediaServerItem, RequestCallback callback){
+    public JSONObject getInfo(MediaServerItem mediaServerItem, RequestCallback callback) {
         Map<String, Object> param = new HashMap<>();
-        return sendGet(mediaServerItem, "api/record/info",param, callback);
+        return sendGet(mediaServerItem, "api/record/info", param, callback);
     }
 
-    public JSONObject addStreamCallInfo(MediaServerItem mediaServerItem, String app, String stream, String callId, RequestCallback callback){
+    public JSONObject addStreamCallInfo(MediaServerItem mediaServerItem, String app, String stream, String callId, RequestCallback callback) {
         Map<String, Object> param = new HashMap<>();
-        param.put("app",app);
-        param.put("stream",stream);
-        param.put("callId",callId);
-        return sendGet(mediaServerItem, "api/record/addStreamCallInfo",param, callback);
+        param.put("app", app);
+        param.put("stream", stream);
+        param.put("callId", callId);
+        return sendGet(mediaServerItem, "api/record/addStreamCallInfo", param, callback);
     }
 
 }

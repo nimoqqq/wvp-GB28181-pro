@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         if (!userSetting.isInterfaceAuthentication()) {
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(null, null, new ArrayList<>() );
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(null, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(token);
             chain.doFilter(request, response);
             return;
@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         JwtUser jwtUser = JwtUtils.verifyToken(jwt);
         String username = jwtUser.getUserName();
         // TODO 处理各个状态
-        switch (jwtUser.getStatus()){
+        switch (jwtUser.getStatus()) {
             case EXPIRED:
                 response.setStatus(400);
                 chain.doFilter(request, response);
@@ -83,7 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Role role = new Role();
         role.setId(jwtUser.getRoleId());
         user.setRole(role);
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, jwtUser.getPassword(), new ArrayList<>() );
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, jwtUser.getPassword(), new ArrayList<>());
         SecurityContextHolder.getContext().setAuthentication(token);
         chain.doFilter(request, response);
     }
